@@ -4,15 +4,27 @@ import { PrismaClient } from '@prisma/client';
 import { RegisterUserDto } from './dto/register-user.dto.js';
 import bcrypt from 'bcrypt'
 import { LoginUserDto } from './dto/login-user.dto.js';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './interface/jwt-payload.interface.js';
 
 @Injectable()
 export class AuthService extends PrismaClient implements OnModuleInit {
 
-  private readonly logger = new Logger('AuthService')
+  private readonly logger = new Logger('AuthService');
+
+  constructor(
+    private readonly jwtService: JwtService
+  ) {
+    super();
+  }
 
   onModuleInit() {
     this.$connect();
     this.logger.log('MongoDB connected')
+  }
+
+  async signJWT(payload: JwtPayload) {
+    return this.jwtService.sign(payload)
   }
 
 
@@ -46,7 +58,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
 
       return {
         user: rest,
-        token: 'ABC'
+        token: await this.signJWT(rest)
       }
 
     } catch (error: any) {
@@ -88,7 +100,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
 
       return {
         user: rest,
-        token: 'ABC'
+        token: await this.signJWT(rest)
       }
 
     } catch (error: any) {
