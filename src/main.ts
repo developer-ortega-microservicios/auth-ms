@@ -1,8 +1,34 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { envs } from './config/envs.js';
 
 async function bootstrap() {
+
+  const logger = new Logger('Auth-ms')
+  
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true
+    })
+  )
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.NATS,
+    options: {
+      servers: envs.natsServers
+    }
+  }, {
+    inheritAppConfig: true
+  })
+
+  await app.startAllMicroservices()
+  await app.listen(envs.port);
+
+  logger.log(`Auth Microservice running on port ${envs.port}`)
 }
 await bootstrap();
