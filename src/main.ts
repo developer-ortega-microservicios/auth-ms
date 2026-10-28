@@ -8,7 +8,12 @@ async function bootstrap() {
 
   const logger = new Logger('Auth-ms')
   
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.NATS,
+    options: {
+      servers : envs.natsServers
+    }
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -17,17 +22,8 @@ async function bootstrap() {
     })
   )
 
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.NATS,
-    options: {
-      servers: envs.natsServers
-    }
-  }, {
-    inheritAppConfig: true
-  })
 
-  await app.startAllMicroservices()
-  await app.listen(envs.port);
+  await app.listen();
 
   logger.log(`Auth Microservice running on port ${envs.port}`)
 }

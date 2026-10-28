@@ -44,6 +44,8 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
+.env.*
+!.env.example
 
 # temp directory
 .temp
@@ -57,3 +59,14 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Cliente generado por Prisma
+/src/generated/prisma
+
+# Skills y configuración de asistentes de IA
+.claude/
+.agents/
+.windsurf/
+.cursor/
+.codex/
+.gemini/
