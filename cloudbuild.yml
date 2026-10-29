@@ -16,3 +16,6 @@ steps:
         "push",
         "northamerica-northeast1-docker.pkg.dev/seismic-hexagon-474712-i2/image-registry/auth-ms",
       ]
+
+options:
+  logging: CLOUD_LOGGING_ONLY
