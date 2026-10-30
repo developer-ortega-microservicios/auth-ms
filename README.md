@@ -2,7 +2,7 @@
 
 Microservicio de autenticación hecho con **NestJS** y **TypeScript**, parte del proyecto del curso [NestJS + Microservicios](https://www.udemy.com/course/nestjs-microservicios/) (Udemy, DevTalles). Escucha mensajes de **NATS**; el acceso HTTP es a través del [client-gateway](https://github.com/developer-ortega-microservicios/client-gateway).
 
-> Proyecto de práctica, **en progreso**. Se actualiza a medida que avanza el curso.
+> Proyecto de práctica completado: este servicio forma parte de una tienda de 5 microservicios desplegada en **Google Kubernetes Engine (GKE)** con Helm. Ver el [launcher](https://github.com/developer-ortega-microservicios/products-launcher).
 
 ## Arquitectura
 
@@ -12,7 +12,7 @@ client-gateway  ──NATS──→  auth-ms  →  MongoDB (Prisma)
 
 Repositorios relacionados en la organización [developer-ortega-microservicios](https://github.com/developer-ortega-microservicios). Se ejecuta junto al resto de servicios desde el [launcher](https://github.com/developer-ortega-microservicios/products-launcher).
 
-## Qué se va a construir
+## Funcionalidades
 
 - Registro de usuarios con la contraseña **encriptada** (bcrypt)
 - Inicio de sesión que devuelve un **JWT**
@@ -62,6 +62,13 @@ Repositorios relacionados en la organización [developer-ortega-microservicios](
    ```bash
    npm run start:dev
    ```
+
+## Despliegue
+
+- **Imagen de producción:** `dockerfile.prod` (build multi-etapa sobre `node:22-alpine`).
+- **Build y publicación:** `cloudbuild.yml` construye la imagen con Cloud Build y la sube a **Artifact Registry** (`image-registry/auth-ms`).
+- **Kubernetes:** se despliega en GKE Autopilot con el chart de Helm `k8s/tienda-gke` del [launcher](https://github.com/developer-ortega-microservicios/products-launcher); se comunica con el resto de servicios por NATS dentro del clúster.
+- **Secrets:** `DATABASE_URL` (MongoDB) y `JWT_SECRET` llegan desde el secret de Kubernetes `auth-secrets`.
 
 ## Variables de entorno
 
